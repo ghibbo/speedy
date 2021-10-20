@@ -8,9 +8,7 @@ Creazione di un modulo Go riutilizzabile che rende la creazione di un'applicazio
 
 
 
-## Obiettivo
-
-### Caratteristiche principali:
+## Caratteristiche principali:
 
 - Implementazione di un **Object Relation Mapper** (ORM) indipendente dal database. 
 
