@@ -1,13 +1,38 @@
 package speedy
 
-func TestFunc(a, b int) int {
-	return a + b
+const version = "1.0.0"
+
+// Speedy App
+type Speedy struct {
+	AppName string
+	Debug   bool //dev o production
+	Version string
 }
 
-func TestFunc2(a, b int) int {
-	return a - b
+// Path Application Start
+func (s *Speedy) New(rootPath string) error {
+	pathConfig := initPaths{
+		rootPath:    rootPath,
+		folderNames: []string{"handlers", "migrations", "views", "data", "public", "tmp", "logs", "middleware"},
+	}
+
+	err := s.Init(pathConfig)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func TestFunc3(a, b int) int {
-	return a * b
+// Initialize Folder
+func (s *Speedy) Init(p initPaths) error {
+	root := p.rootPath
+	for _, path := range p.folderNames {
+		// create folder
+		err := s.CreateDirIfNotExist(root + "/" + path)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

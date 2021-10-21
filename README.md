@@ -37,8 +37,45 @@ Creazione di un modulo Go riutilizzabile che rende la creazione di un'applicazio
 
 
 
-Infine, l'applicazione a riga di comando ci permetterà di creare un'applicazione web con il comando: `speedy new <myproject>`	 
+Infine, l'applicazione a riga di comando ci permetterà di creare un'applicazione web con: `speedy new <myproject>`	 
 
 
 
 ## Start 
+
+### Creazione del progetto
+
+VStudio --> GO-FRAME
+
+2 SottoCartelle --> speedy, myapp
+
+#### speedy:
+
+`go mod init github.com/ghibbo/speedy`
+
+#### myapp:
+
+`go mod init myapp`
+
+Appendo in go.mod: `replace github.com/ghibbo/speedy => ../speedy`
+
+#### Testing del modulo speedy:
+
+Creo diverse funzioni di Test (speedy.go)
+
+Check delle funzioni in main.go (myapp)
+
+### Accorgimento:
+
+VSCode non avverte immediatamente le modifiche fatte nel modulo **speedy**.
+
+Per mantenere sincronizzata l'applicazione ed il package in **myapp** posso: 
+
+1. `go get -u github.com/ghibbo/speedy`
+2. `go mod vendor`
+3. Creare un Makefile: `make run`  
+
+Bene!!!
+
+## Sviluppo di Speedy
+
