@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/ghibbo/speedy/render"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
@@ -23,6 +24,7 @@ type Speedy struct {
 	InfoLog  *log.Logger
 	RootPath string
 	Routes   *chi.Mux
+	Render   *render.Render
 	config   config
 }
 
@@ -64,6 +66,7 @@ func (s *Speedy) New(rootPath string) error {
 	s.Version = version
 	s.RootPath = rootPath
 	s.Routes = s.routes().(*chi.Mux)
+	s.Render = s.createRenderer(s)
 	s.config = config{
 		port:     os.Getenv("PORT"),
 		renderer: os.Getenv("RENDERER"),
@@ -90,7 +93,7 @@ func (s *Speedy) ListenAndServe() {
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", os.Getenv("PORT")),
 		ErrorLog:     s.ErrorLog,
-		Handler:      s.routes(),
+		Handler:      s.Routes,
 		IdleTimeout:  30 * time.Second,
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 600 * time.Second,
@@ -118,4 +121,14 @@ func (s *Speedy) startLoggers() (*log.Logger, *log.Logger) {
 	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
 	return infoLog, errorLog
+}
+
+func (s *Speedy) createRenderer(speed *Speedy) *render.Render {
+	myRender := render.Render{
+		Renderer: speed.config.renderer,
+		RootPath: speed.RootPath,
+		Port:     speed.config.port,
+	}
+
+	return &myRender
 }
