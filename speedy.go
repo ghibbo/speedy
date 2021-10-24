@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/CloudyKit/jet/v6"
 	"github.com/ghibbo/speedy/render"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
@@ -25,6 +26,7 @@ type Speedy struct {
 	RootPath string
 	Routes   *chi.Mux
 	Render   *render.Render
+	JetViews *jet.Set
 	config   config
 }
 
@@ -66,11 +68,19 @@ func (s *Speedy) New(rootPath string) error {
 	s.Version = version
 	s.RootPath = rootPath
 	s.Routes = s.routes().(*chi.Mux)
-	s.Render = s.createRenderer(s)
 	s.config = config{
 		port:     os.Getenv("PORT"),
 		renderer: os.Getenv("RENDERER"),
 	}
+
+	var views = jet.NewSet(
+		jet.NewOSFileSystemLoader(fmt.Sprintf("%s/views", rootPath)),
+		jet.InDevelopmentMode(),
+	)
+
+	s.JetViews = views
+
+	s.createRenderer()
 
 	return nil
 }
@@ -123,12 +133,12 @@ func (s *Speedy) startLoggers() (*log.Logger, *log.Logger) {
 	return infoLog, errorLog
 }
 
-func (s *Speedy) createRenderer(speed *Speedy) *render.Render {
+func (s *Speedy) createRenderer() {
 	myRender := render.Render{
-		Renderer: speed.config.renderer,
-		RootPath: speed.RootPath,
-		Port:     speed.config.port,
+		Renderer: s.config.renderer,
+		RootPath: s.RootPath,
+		Port:     s.config.port,
+		JetViews: s.JetViews,
 	}
-
-	return &myRender
+	s.Render = &myRender
 }
